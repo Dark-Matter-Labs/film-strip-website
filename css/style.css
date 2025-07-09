@@ -1,0 +1,206 @@
+/* css/style.css */
+
+:root {
+    --bg-color: #1a1a1a;
+    --film-strip-color: #333;
+    --text-color: #e0e0e0;
+    --accent-color: #f0c14b;
+    --panel-bg: #252525;
+}
+
+/* --- Base & Typography --- */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Roboto Mono', monospace;
+    margin: 0;
+    overflow-x: hidden; /* Prevent horizontal scrollbars */
+}
+
+h1, .scene-number {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.site-header, .site-footer {
+    text-align: center;
+    padding: 4rem 1rem;
+}
+.site-header h1 {
+    font-size: 3rem;
+    color: var(--accent-color);
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+.site-footer {
+    font-size: 2rem;
+    font-family: 'Oswald', sans-serif;
+    color: #555;
+}
+
+/* --- The Film Strip Container --- */
+.film-strip-container {
+    position: relative;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 0;
+}
+
+/* This ::before creates the central dark gray strip */
+.film-strip-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px; /* Width of the film strip itself */
+    height: 100%;
+    background-color: var(--film-strip-color);
+    z-index: -1;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* These ::after pseudo-elements create the sprocket holes using radial gradients */
+.film-strip-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    /* Positioned to the left of the center line */
+    transform: translateX(calc(-60px - 10px)); /* Half strip width + spacing */
+    width: 8px;
+    height: 100%;
+    /* A repeating gradient creates the illusion of holes */
+    background-image: repeating-radial-gradient(circle at center, 
+        transparent, 
+        transparent 3px, 
+        var(--film-strip-color) 3px, 
+        var(--film-strip-color) 4px);
+    background-size: 8px 30px; /* Size of each "hole" and the space between */
+    z-index: -1;
+
+    /* A simple box-shadow creates the second set of holes on the right */
+    box-shadow: 140px 0 0 0 var(--film-strip-color);
+}
+
+
+/* --- Scene & Panel Styling --- */
+.scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15vh; /* Vertical spacing between scenes */
+    width: 100%;
+    
+    /* Animation setup: initially hidden */
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* The state when the scene becomes visible */
+.scene.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.panel {
+    width: 50%;
+    background: var(--panel-bg);
+    padding: 15px;
+    border: 1px solid #444;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.panel img {
+    width: 100%;
+    display: block;
+    height: auto;
+}
+
+.caption {
+    width: 40%;
+    padding: 1.5rem;
+}
+
+.caption .scene-number {
+    display: block;
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.caption p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #bbb;
+}
+
+/* --- Alternating Layout (Comic Book Style) --- */
+.scene:nth-child(odd) {
+    justify-content: flex-start;
+}
+.scene:nth-child(odd) .panel {
+    order: 1; /* Puts panel on the right */
+    margin-left: -60px; /* Overlaps the film strip */
+}
+.scene:nth-child(odd) .caption {
+    order: 0; /* Puts caption on the left */
+    text-align: right;
+    padding-right: 5%;
+}
+
+.scene:nth-child(even) {
+    justify-content: flex-end;
+}
+.scene:nth-child(even) .panel {
+    order: 0; /* Puts panel on the left */
+    margin-right: -60px; /* Overlaps the film strip */
+}
+.scene:nth-child(even) .caption {
+    order: 1; /* Puts caption on the right */
+    text-align: left;
+    padding-left: 5%;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .scene,
+    .scene:nth-child(odd),
+    .scene:nth-child(even) {
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 10vh;
+    }
+
+    .panel, .caption,
+    .scene:nth-child(odd) .panel,
+    .scene:nth-child(even) .panel,
+    .scene:nth-child(odd) .caption,
+    .scene:nth-child(even) .caption {
+        width: 90%;
+        order: 0; /* Reset order */
+        margin: 0;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .scene .panel {
+        order: 0;
+    }
+    .scene .caption {
+        order: 1;
+        margin-top: 1rem;
+    }
+    
+    /* Simplify film strip for mobile */
+    .film-strip-container::before {
+        width: 80px;
+    }
+    .film-strip-container::after {
+        display: none; /* Hide sprocket holes on mobile */
+    }
+}
